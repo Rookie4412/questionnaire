@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.example.questionnaire.entity.Question;
 import com.example.questionnaire.entity.Questionnaire;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class QuizVo {
 
 	public Questionnaire questionnaire = new Questionnaire();
-
+	
+	@JsonProperty("question_list")
 	public List<Question> questionList = new ArrayList<>();
 
 	public QuizVo() {
@@ -21,6 +23,8 @@ public class QuizVo {
 		this.questionnaire = questionnaire;
 		this.questionList = questionList;
 	}
+	
+	
 
 	public Questionnaire getQuestionnaire() {
 		return questionnaire;

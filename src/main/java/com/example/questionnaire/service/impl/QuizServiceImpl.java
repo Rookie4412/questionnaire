@@ -9,6 +9,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -33,6 +34,7 @@ public class QuizServiceImpl implements QuizService {
 	@Autowired
 	private QuestionDao quDao;
 
+//	@Cacheable(cacheNames = "" , key ="#account")
 //	@Transactional 不可以寫在裡面只能在這 ， 作用是全部都可以執行獲都不能執行
 	@Transactional
 	@Override
@@ -64,7 +66,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		List<Question> quList = req.getQuestionList();
 		for (Question qu : quList) {
-			if (qu.getQuId() <= 0 || !StringUtils.hasText(qn.getTitle()) || !StringUtils.hasText(qu.getOpTion())
+			if (qu.getQuId() <= 0 || !StringUtils.hasText(qu.getqTitle()) || !StringUtils.hasText(qu.getOpTion())
 					|| !StringUtils.hasText(qu.getOptionType())) {
 				return new QuizRes(RtnCode.QUESTION_PARAM_ERROR);
 			}
@@ -88,17 +90,18 @@ public class QuizServiceImpl implements QuizService {
 		if (qnOp.isEmpty()) {
 			return new QuizRes(RtnCode.QUESTIONNAIRE_ID_NOT_FOUND);
 		}
+		// collect deleted _question_id
 		Questionnaire qn = qnOp.get();
 //		可以修改的條件
 //		1. 尚未發布 : is_published == false, 可以修改
 //		2. 已發布但尚未開始 : is_published == true + 當前時間必須小於 strat_data
-		if (!qn.isPublished() == false || (qn.isPublished() && LocalDate.now().isBefore(qn.getStartDate()))) {
+		//qn.isPublished() == false  寫法等於 !qn.isPublished()
+		if (qn.isPublished() == false || (qn.isPublished() && LocalDate.now().isBefore(qn.getStartDate()))) {
 			qnDao.save(req.getQuestionnaire());
 			quDao.saveAll(req.getQuestionList());
 			return new QuizRes(RtnCode.SUCCESSFUL);
 		}
 		return new QuizRes(RtnCode.UPDATE_ERROR);
-
 	}
 
 	private QuizRes checkQuestionnaireId(QuizReq req) {
@@ -114,7 +117,8 @@ public class QuizServiceImpl implements QuizService {
 		}
 		return null;
 	}
-
+	
+	@Transactional
 	@Override
 	public QuizRes deleteQustionnaire(List<Integer> qnIdList) {
 		// 抓取問卷Id ，
@@ -133,7 +137,8 @@ public class QuizServiceImpl implements QuizService {
 		}
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
-
+	
+	@Transactional
 	@Override
 	public QuizRes deleteQustion(int qnId, List<Integer> quIdList) {
 		Optional<Questionnaire> qnOp = qnDao.findById(qnId);
@@ -148,6 +153,10 @@ public class QuizServiceImpl implements QuizService {
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
 
+	@Cacheable(cacheNames = "search",
+			// key = "test_2023-11-10"
+			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
+			unless = "#result.rtnCode.code != 200")
 	@Override
 	// 時間
 	public QuizRes search(String title, LocalDate startDate, LocalDate endDate) {
@@ -188,19 +197,20 @@ public class QuizServiceImpl implements QuizService {
 	@Override
 	public QuestionnaireRes searchQuestionnaireList(String title, LocalDate startDate, LocalDate endDate,
 			boolean isAll) {
-		title = StringUtils.hasText(title) ? title : "";
-		startDate = startDate != null ? startDate : LocalDate.of(1971, 1, 1);
-		endDate = endDate != null ? endDate : LocalDate.of(2099, 12, 31);
+//		title = StringUtils.hasText(title) ? title : "";
+//		startDate = startDate != null ? startDate : LocalDate.of(1971, 1, 1);
+//		endDate = endDate != null ? endDate : LocalDate.of(2099, 12, 31);
 		List<Questionnaire> qnList = new ArrayList<>();
 		if (!isAll) {
 			// 已發布時給前端
 			qnList = qnDao.findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqualAndPublishedTrue(
 					title, startDate, endDate);
+			return new QuestionnaireRes(qnList, RtnCode.SUCCESSFUL);
 		} else {
 			qnList = qnDao.findByTitleContainingAndStartDateGreaterThanEqualAndEndDateLessThanEqual(title, startDate,
 					endDate);
+			return new QuestionnaireRes(qnList, RtnCode.SUCCESSFUL);
 		}
-		return new QuestionnaireRes(qnList, RtnCode.SUCCESSFUL);
 	}
 
 	// 內層 許多小問題
@@ -212,5 +222,11 @@ public class QuizServiceImpl implements QuizService {
 		List<Question> quList = quDao.findAllByQnIdIn(Arrays.asList(qnId));
 		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
 	}
+
+//	@Override
+//	public QuizRes searchFuzzy(String title, LocalDate startDate, LocalDate endDate) {
+//		
+//		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
+//	}
 
 }

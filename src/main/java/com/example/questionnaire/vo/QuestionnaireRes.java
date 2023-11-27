@@ -7,6 +7,7 @@ import com.example.questionnaire.entity.Questionnaire;
 
 public class QuestionnaireRes {
 
+	
 	public List<Questionnaire> questionnaireList;
 
 	private RtnCode rtnCode;
@@ -19,6 +20,13 @@ public class QuestionnaireRes {
 		super();
 		this.questionnaireList = questionnaireList;
 		this.rtnCode = rtnCode;
+	}
+	
+	
+
+	public QuestionnaireRes(List<Questionnaire> questionnaireList) {
+		super();
+		this.questionnaireList = questionnaireList;
 	}
 
 	public List<Questionnaire> getQuestionnaireList() {

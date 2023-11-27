@@ -29,6 +29,14 @@ public class QuizRes {
 		this.quizVoList = quizVoList;
 		this.rtnCode = rtnCode;
 	}
+	
+	
+
+
+	public QuizRes(List<QuizVo> quizVoList) {
+		super();
+		this.quizVoList = quizVoList;
+	}
 
 
 	public List<QuizVo> getQuizVoList() {

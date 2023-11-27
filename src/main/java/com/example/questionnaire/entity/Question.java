@@ -23,35 +23,35 @@ public class Question {
 	private String qTitle;
 
 	@Column(name = "option_type")
-	private String OptionType;
+	private String optionType;
 
 	@Column(name = "is_necessary")
 	private boolean necessary;
 
 	@Column(name = "q_option")
-	private String OpTion;
+	private String option;
 
 	public Question() {
 		super();
 	}
 
-	public Question(int quId, String qTitle, String optionType, boolean necessary, String opTion) {
+	public Question(int quId, String qTitle, String optionType, boolean necessary, String option) {
 		super();
 		this.quId = quId;
 		this.qTitle = qTitle;
-		OptionType = optionType;
+		this.optionType = optionType;
 		this.necessary = necessary;
-		OpTion = opTion;
+		this.option = option;
 	}
 
-	public Question(int quId, int qnId, String qTitle, String optionType, boolean necessary, String opTion) {
+	public Question(int quId, int qnId, String qTitle, String optionType, boolean necessary, String option) {
 		super();
 		this.quId = quId;
 		this.qnId = qnId;
 		this.qTitle = qTitle;
-		OptionType = optionType;
+		this.optionType = optionType;
 		this.necessary = necessary;
-		OpTion = opTion;
+		this.option = option;
 	}
 
 	public int getQuId() {
@@ -79,11 +79,19 @@ public class Question {
 	}
 
 	public String getOptionType() {
-		return OptionType;
+		return optionType;
 	}
 
 	public void setOptionType(String optionType) {
-		OptionType = optionType;
+		this.optionType = optionType;
+	}
+
+	public String getOption() {
+		return option;
+	}
+
+	public void setOption(String option) {
+		this.option = option;
 	}
 
 	public boolean isNecessary() {
@@ -95,11 +103,11 @@ public class Question {
 	}
 
 	public String getOpTion() {
-		return OpTion;
+		return option;
 	}
 
 	public void setOpTion(String opTion) {
-		OpTion = opTion;
+		option = opTion;
 	}
 
 }
