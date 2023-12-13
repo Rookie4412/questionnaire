@@ -1,6 +1,7 @@
 package com.example.questionnaire.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,22 +10,28 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.example.questionnaire.constants.RtnCode;
 import com.example.questionnaire.entity.Question;
 import com.example.questionnaire.entity.Questionnaire;
+import com.example.questionnaire.entity.User;
 import com.example.questionnaire.repository.QuestionDao;
 import com.example.questionnaire.repository.QuestionnaireDao;
+import com.example.questionnaire.repository.UserDao;
 import com.example.questionnaire.service.ifs.QuizService;
 import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
 import com.example.questionnaire.vo.QuizVo;
+import com.example.questionnaire.vo.UserRes;
 
+//排成
+@EnableScheduling
 @Service
 public class QuizServiceImpl implements QuizService {
 
@@ -33,6 +40,9 @@ public class QuizServiceImpl implements QuizService {
 
 	@Autowired
 	private QuestionDao quDao;
+
+	@Autowired
+	private UserDao userDao;
 
 //	@Cacheable(cacheNames = "" , key ="#account")
 //	@Transactional 不可以寫在裡面只能在這 ， 作用是全部都可以執行獲都不能執行
@@ -66,7 +76,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		List<Question> quList = req.getQuestionList();
 		for (Question qu : quList) {
-			if (qu.getQuId() <= 0 || !StringUtils.hasText(qu.getqTitle()) || !StringUtils.hasText(qu.getOpTion())
+			if (qu.getQuId() <= 0 || !StringUtils.hasText(qu.getqTitle()) || !StringUtils.hasText(qu.getOption())
 					|| !StringUtils.hasText(qu.getOptionType())) {
 				return new QuizRes(RtnCode.QUESTION_PARAM_ERROR);
 			}
@@ -95,7 +105,7 @@ public class QuizServiceImpl implements QuizService {
 //		可以修改的條件
 //		1. 尚未發布 : is_published == false, 可以修改
 //		2. 已發布但尚未開始 : is_published == true + 當前時間必須小於 strat_data
-		//qn.isPublished() == false  寫法等於 !qn.isPublished()
+		// qn.isPublished() == false 寫法等於 !qn.isPublished()
 		if (qn.isPublished() == false || (qn.isPublished() && LocalDate.now().isBefore(qn.getStartDate()))) {
 			qnDao.save(req.getQuestionnaire());
 			quDao.saveAll(req.getQuestionList());
@@ -117,7 +127,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	@Override
 	public QuizRes deleteQustionnaire(List<Integer> qnIdList) {
@@ -137,7 +147,7 @@ public class QuizServiceImpl implements QuizService {
 		}
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
-	
+
 	@Transactional
 	@Override
 	public QuizRes deleteQustion(int qnId, List<Integer> quIdList) {
@@ -153,10 +163,10 @@ public class QuizServiceImpl implements QuizService {
 		return new QuizRes(RtnCode.SUCCESSFUL);
 	}
 
-	@Cacheable(cacheNames = "search",
-			// key = "test_2023-11-10"
-			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
-			unless = "#result.rtnCode.code != 200")
+//	@Cacheable(cacheNames = "search",
+////			 key = "test_2023-11-10"
+//			key = "#title.concat('_').concat(#startDate.toString()).concat('_').concat(#endDate.toString())",
+//			unless = "#result.rtnCode.code != 200")
 	@Override
 	// 時間
 	public QuizRes search(String title, LocalDate startDate, LocalDate endDate) {
@@ -223,10 +233,36 @@ public class QuizServiceImpl implements QuizService {
 		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
 	}
 
-//	@Override
-//	public QuizRes searchFuzzy(String title, LocalDate startDate, LocalDate endDate) {
-//		
-//		return new QuestionRes(quList, RtnCode.SUCCESSFUL);
-//	}
+	// 秒/分/時/日/月/週
+	@Scheduled(cron = "0/5 * 14 * * *")
+	public void schedule() {
+		System.out.println(LocalDateTime.now());
+	}
 
+	@Scheduled(cron = "0 0 0 * * *")
+	public void updateQnstatue() {
+		LocalDate today = LocalDate.now();
+		int res = qnDao.updateQnStatus(today);
+		System.out.println(today);
+		System.out.println(res);
+
+	}
+
+	@Override
+	public QuizRes setUser(List<User> userList) {
+		for (User user : userList) {
+			user.setDatetime(LocalDateTime.now());
+		}
+		userDao.saveAll(userList);
+		return new QuizRes(RtnCode.SUCCESSFUL);
+	}
+
+	@Override
+	public UserRes getUser(int qnId) {
+		List<User> List = userDao.findAllByQnId(qnId);
+		if (List.isEmpty()) {
+			return new UserRes(null, RtnCode.QUESTIONNAIRE_ID_NOT_FOUND);
+		}
+		return new UserRes(List, RtnCode.SUCCESSFUL);
+	}
 }

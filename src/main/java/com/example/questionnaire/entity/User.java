@@ -1,49 +1,53 @@
 package com.example.questionnaire.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "user")
 public class User {
-	
+
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	@Column(name = "num")
 	private int num;
-	
+
 	@Column(name = "name")
 	private String name;
 
-	@Column(name="phone_number")
+	@Column(name = "phone_number")
 	private String phoneNumber;
-	
-	@Column(name="email")
+
+	@Column(name = "email")
 	private String email;
-	
-	@Column(name="age")
+
+	@Column(name = "age")
 	private int age;
-	
-	@Column(name="qn_id")
-	private String qnId;
-	
-	@Column(name="q_id")
-	private String qId;
-	
-	@Column(name="ans")
+
+	@Column(name = "qn_id")
+	private int qnId;
+
+	@Column(name = "q_id")
+	private int qId;
+
+	@Column(name = "ans")
 	private String ans;
-	
-	@Column(name="date_time")
-	private LocalDate datetime;
+
+	@Column(name = "date_time")
+	private LocalDateTime datetime;
 
 	public User() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public User(String name, String phoneNumber, String email, int age, String qnId, String qId, String ans) {
+	public User(String name, String phoneNumber, String email, int age, int qnId, int qId, String ans) {
 		super();
 		this.name = name;
 		this.phoneNumber = phoneNumber;
@@ -52,6 +56,14 @@ public class User {
 		this.qnId = qnId;
 		this.qId = qId;
 		this.ans = ans;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
 	}
 
 	public String getName() {
@@ -86,19 +98,19 @@ public class User {
 		this.age = age;
 	}
 
-	public String getQnId() {
+	public int getQnId() {
 		return qnId;
 	}
 
-	public void setQnId(String qnId) {
+	public void setQnId(int qnId) {
 		this.qnId = qnId;
 	}
 
-	public String getqId() {
+	public int getqId() {
 		return qId;
 	}
 
-	public void setqId(String qId) {
+	public void setqId(int qId) {
 		this.qId = qId;
 	}
 
@@ -110,23 +122,12 @@ public class User {
 		this.ans = ans;
 	}
 
-	public int getNum() {
-		return num;
-	}
-
-	public void setNum(int num) {
-		this.num = num;
-	}
-
-	public LocalDate getDatetime() {
+	public LocalDateTime getDatetime() {
 		return datetime;
 	}
 
-	public void setDatetime(LocalDate datetime) {
+	public void setDatetime(LocalDateTime datetime) {
 		this.datetime = datetime;
 	}
-	
-	
-	
-	
+
 }

@@ -3,10 +3,12 @@ package com.example.questionnaire.service.ifs;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.questionnaire.entity.User;
 import com.example.questionnaire.vo.QuestionRes;
 import com.example.questionnaire.vo.QuestionnaireRes;
 import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
+import com.example.questionnaire.vo.UserRes;
 
 public interface QuizService {
 
@@ -25,4 +27,9 @@ public interface QuizService {
 	public QuestionnaireRes searchQuestionnaireList(String title, LocalDate startDate, LocalDate endDate , boolean isPublished);
 	
 	public QuestionRes searchQuestionList(int qnId);
+	
+	public QuizRes setUser(List<User> userList);
+
+	public UserRes getUser(int qnId);
+
 }

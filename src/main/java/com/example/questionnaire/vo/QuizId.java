@@ -10,6 +10,29 @@ public class QuizId {
 
 	private int qnId;
 
+	public QuizId() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public QuizId(List<Integer> qnList) {
+		super();
+		this.qnList = qnList;
+	}
+
+	public QuizId(List<Integer> quList, int qnId) {
+		super();
+		this.quList = quList;
+		this.qnId = qnId;
+	}
+
+	public QuizId(List<Integer> qnList, List<Integer> quList, int qnId) {
+		super();
+		this.qnList = qnList;
+		this.quList = quList;
+		this.qnId = qnId;
+	}
+
 	public List<Integer> getQnList() {
 		return qnList;
 	}

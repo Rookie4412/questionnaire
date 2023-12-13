@@ -49,7 +49,7 @@ public class QuizServiceTest {
 
 	@Test
 	public void deleteQustionnaireTest() {
-		List<Integer> qnidList = Arrays.asList(16);
+		List<Integer> qnidList = Arrays.asList(51);
 		QuizRes res = service.deleteQustionnaire(qnidList);
 		System.out.println(res.getRtnCode().getCode());
 		System.out.println(res.getRtnCode().getMessage());

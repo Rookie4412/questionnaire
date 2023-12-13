@@ -86,13 +86,6 @@ public class Question {
 		this.optionType = optionType;
 	}
 
-	public String getOption() {
-		return option;
-	}
-
-	public void setOption(String option) {
-		this.option = option;
-	}
 
 	public boolean isNecessary() {
 		return necessary;
@@ -108,6 +101,14 @@ public class Question {
 
 	public void setOpTion(String opTion) {
 		option = opTion;
+	}
+
+	public String getOption() {
+		return option;
+	}
+
+	public void setOption(String option) {
+		this.option = option;
 	}
 
 }

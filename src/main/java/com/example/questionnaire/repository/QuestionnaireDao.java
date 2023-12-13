@@ -37,6 +37,11 @@ public interface QuestionnaireDao extends JpaRepository<Questionnaire, Integer> 
 			@Param("startDate") LocalDate startDate, //
 			@Param("endDate") LocalDate endDate);
 
+	@Modifying(clearAutomatically = true)
+	@Transactional
+	@Query(value = "update Questionnaire set published = true where startDate = :today")
+	public int updateQnStatus(@Param("today")LocalDate today);
+
 	@Modifying
 	@Transactional
 	@Query(value = "INSERT INTO questionnaire(title,description,is_published,start_date,end_date)"
@@ -46,7 +51,7 @@ public interface QuestionnaireDao extends JpaRepository<Questionnaire, Integer> 
 
 	@Modifying
 	@Transactional
-	@Query(value = "UPDATE questionnaire set title = :title,description = :desp" +"where id = :id", nativeQuery = true)
+	@Query(value = "UPDATE questionnaire set title = :title,description = :desp" + "where id = :id", nativeQuery = true)
 
 	public int update(@Param("id") int id, //
 			@Param("title") String title, //
@@ -55,19 +60,17 @@ public interface QuestionnaireDao extends JpaRepository<Questionnaire, Integer> 
 	@Modifying(clearAutomatically = true)
 	@Transactional
 	@Query(value = "UPDATE Questionnaire set title = :title,description = :desp,startDate = :startDate"
-			+" where id = :id")
-	public int updateData(
-			@Param("id")int id, //
-			@Param("title")String title, //
-			@Param("desp")String descrption,//
-			@Param("startDate")LocalDate startDate); 
+			+ " where id = :id")
+	public int updateData(@Param("id") int id, //
+			@Param("title") String title, //
+			@Param("desp") String descrption, //
+			@Param("startDate") LocalDate startDate);
 
 	@Query(value = "SELECT * from questionnare" + " where start_date > :startDate", nativeQuery = true)
 	public List<Questionnaire> findByStartDate(@Param("startDate") LocalDate StartDate);
-	
+
 //	@Query(value = "SELECT new Questionnare(id,title,description,published,startDate,endDate)" 
 //	+"from Questionnare where startDate > :startDate")
 //	public List<Questionnaire> findByStartDate1(@Param("startDate") LocalDate StartDate);
-	
-	
+
 }

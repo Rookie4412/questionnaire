@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.questionnaire.constants.RtnCode;
 import com.example.questionnaire.entity.Questionnaire;
+import com.example.questionnaire.entity.User;
 import com.example.questionnaire.repository.QuestionnaireDao;
 import com.example.questionnaire.service.ifs.QuizService;
 import com.example.questionnaire.vo.QuestionRes;
@@ -25,6 +26,7 @@ import com.example.questionnaire.vo.QuizReq;
 import com.example.questionnaire.vo.QuizRes;
 import com.example.questionnaire.vo.QuizSearchReq;
 import com.example.questionnaire.vo.QuizVo;
+import com.example.questionnaire.vo.UserRes;
 
 @RestController
 @CrossOrigin
@@ -35,6 +37,7 @@ public class QuizController {
 
 	@Autowired
 	private QuestionnaireDao quDao;
+
 	// 放入資料庫
 	@PostMapping(value = "api/quiz/create")
 	public QuizRes create(@RequestBody QuizReq req) {
@@ -61,8 +64,7 @@ public class QuizController {
 
 	// 搜尋資料庫拿資料
 	@GetMapping(value = "api/quiz/search")
-	public QuizRes search(
-			@RequestParam(value = "title", required = false, defaultValue = "") String title,
+	public QuizRes search(@RequestParam(value = "title", required = false, defaultValue = "") String title,
 			@RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
 			@RequestParam(value = "isPublished", required = false) boolean isPublished) {
@@ -84,6 +86,14 @@ public class QuizController {
 	public QuestionRes searchQuestionList(@RequestParam int qnId) {
 		return service.searchQuestionList(qnId);
 	}
-	
 
+	@PostMapping(value = "api/quiz/setUser")
+	public QuizRes setUser(@RequestBody UserRes userList) {
+		return service.setUser(userList.getUserList());
+	}
+
+	@GetMapping(value = "api/quiz/getUser")
+	public UserRes getUser(@RequestParam int qnId) {
+		return service.getUser(qnId);
+	}
 }
